@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isVerified() {
+      return request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Users
+    match /users/{userId} {
+      function isValidUser(data) {
+        return data.keys().hasAll(['userId', 'displayName', 'role']) &&
+               data.userId == request.auth.uid &&
+               data.role in ['customer', 'provider'] &&
+               data.displayName is string &&
+               data.displayName.size() <= 100;
+      }
+
+      allow get: if isSignedIn();
+      allow create: if isSignedIn() && isValidUser(incoming()) && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'providerTitle', 'categories', 'location', 'rating', 'totalReviews', 'isVerified'])
+      );
+    }
+
+    // Jobs
+    match /jobs/{jobId} {
+      function isValidJob(data) {
+        return data.keys().hasAll(['customerId', 'category', 'description', 'offeredPrice', 'status', 'createdAt']) &&
+               data.customerId == request.auth.uid &&
+               data.category is string &&
+               data.description is string &&
+               data.offeredPrice is number &&
+               data.status in ['pending', 'accepted', 'completed', 'cancelled'];
+      }
+
+      allow list: if isSignedIn();
+      allow get: if isSignedIn();
+      allow create: if isSignedIn() && isValidJob(incoming());
+      allow update: if isSignedIn() && (
+        // Customer updates: cancel or change details (if still pending)
+        (isOwner(existing().customerId) && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'description', 'offeredPrice', 'priceLevel', 'updatedAt'])) ||
+        // Provider updates: accept job
+        (incoming().status == 'accepted' && existing().status == 'pending' && incoming().providerId == request.auth.uid && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'providerId', 'providerName', 'updatedAt'])) ||
+        // Provider updates: complete job
+        (isOwner(existing().providerId) && incoming().status == 'completed' && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']))
+      );
+      allow delete: if false;
+    }
+
+    // Reviews
+    match /reviews/{reviewId} {
+      function isValidReview(data) {
+        return data.keys().hasAll(['jobId', 'customerId', 'providerId', 'rating', 'createdAt']) &&
+               data.customerId == request.auth.uid &&
+               data.rating is number &&
+               data.rating >= 1 &&
+               data.rating <= 5;
+      }
+
+      allow list: if true;
+      allow get: if true;
+      allow create: if isSignedIn() && isValidReview(incoming());
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}

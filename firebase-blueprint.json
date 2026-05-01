@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user profiles for both customers and service providers.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["customer", "provider"] },
+        "rating": { "type": "number" },
+        "totalReviews": { "type": "number" },
+        "isVerified": { "type": "boolean" },
+        "providerTitle": { "type": "string" },
+        "categories": { "type": "array", "items": { "type": "string" } },
+        "location": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "displayName", "role"]
+    },
+    "Job": {
+      "title": "Job",
+      "description": "A service request created by a customer.",
+      "type": "object",
+      "properties": {
+        "jobId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "providerId": { "type": "string" },
+        "providerName": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "photoUrls": { "type": "array", "items": { "type": "string" } },
+        "offeredPrice": { "type": "number" },
+        "priceLevel": { "type": "string", "enum": ["low", "fair", "high"] },
+        "status": { "type": "string", "enum": ["pending", "accepted", "completed", "cancelled"] },
+        "location": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["customerId", "category", "description", "offeredPrice", "status", "createdAt"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Reviews left by customers for service providers.",
+      "type": "object",
+      "properties": {
+        "reviewId": { "type": "string" },
+        "jobId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "providerId": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["jobId", "customerId", "providerId", "rating", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/jobs/{jobId}": {
+      "schema": "Job",
+      "description": "Service request jobs"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Reviews for providers"
+    }
+  }
+}
