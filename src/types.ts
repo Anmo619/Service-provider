@@ -11,6 +11,7 @@ export interface UserProfile {
   providerTitle?: string;
   categories?: string[];
   location?: string;
+  addresses?: string[];
   createdAt: string;
 }
 
@@ -24,14 +25,28 @@ export interface Job {
   providerId?: string;
   providerName?: string;
   category: string;
+  serviceName?: string;
   description: string;
   photoUrls?: string[];
   offeredPrice: number;
   priceLevel: PriceLevel;
   status: JobStatus;
   location: string;
+  detailedAddress?: {
+    houseNo: string;
+    landmark: string;
+    area: string;
+  };
   createdAt: any; // Firestore timestamp
   updatedAt?: any;
+}
+
+export interface Service {
+  id: string;
+  label: string;
+  description: string;
+  icon: string;
+  estimatedPrice: number;
 }
 
 export interface Category {
@@ -41,6 +56,7 @@ export interface Category {
   basePrice: number;
   image: string;
   popular?: boolean;
+  services: Service[];
 }
 
 export interface Review {

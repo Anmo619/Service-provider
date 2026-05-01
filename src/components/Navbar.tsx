@@ -4,12 +4,12 @@ import { useAuth } from '../AuthProvider';
 import { auth } from '../lib/firebase';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import SearchBar from './SearchBar';
 
 export default function Navbar() {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [location, setLocation] = useState('New Delhi');
 
   const handleSignOut = async () => {
     await auth.signOut();
@@ -25,25 +25,25 @@ export default function Navbar() {
             <span className="tracking-tighter hidden sm:block">FixItNow</span>
           </Link>
 
-          {/* Search & Location Bar - Desktop */}
-          <div className="hidden lg:flex items-center flex-1 max-w-xl bg-slate-100/50 border border-slate-200/60 rounded-2xl px-4 py-2.5 hover:bg-slate-100 hover:border-brand-200 transition-all duration-300">
-            <div className="flex items-center space-x-2 border-r border-slate-200 pr-4 mr-4 hover:cursor-pointer group">
-              <MapPin className="w-4 h-4 text-brand-600" />
-              <span className="text-sm font-bold text-slate-700 whitespace-nowrap">{location}</span>
-              <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-brand-500" />
-            </div>
-            <div className="flex items-center flex-1 space-x-2">
-              <Search className="w-4 h-4 text-slate-400" />
-              <input 
-                type="text" 
-                placeholder="Search for electrician, plumber..." 
-                className="bg-transparent border-none outline-none text-sm w-full placeholder:text-slate-400 font-bold"
-              />
-            </div>
+          {/* Search Bar - Desktop */}
+          <div className="hidden lg:block flex-1 max-w-xl">
+            <SearchBar />
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6">
+            <Link 
+              to="/services" 
+              className="px-4 py-2 text-slate-600 hover:text-brand-600 transition-colors font-bold text-sm tracking-tight"
+            >
+              Services
+            </Link>
+            <Link 
+              to="/estimator" 
+              className="px-4 py-2 text-slate-600 hover:text-brand-600 transition-colors font-bold text-sm tracking-tight"
+            >
+              Estimator
+            </Link>
             {user ? (
               <>
                 <Link 

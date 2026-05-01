@@ -5,6 +5,9 @@ import BookingPage from './pages/BookingPage';
 import Dashboard from './pages/Dashboard';
 import AuthPage from './pages/AuthPage';
 import RoleSelection from './pages/RoleSelection';
+import ServicesPage from './pages/ServicesPage';
+import CategoryPage from './pages/CategoryPage';
+import PriceEstimatorPage from './pages/PriceEstimatorPage';
 import Navbar from './components/Navbar';
 
 function AppRoutes() {
@@ -22,6 +25,9 @@ function AppRoutes() {
       <main className="container mx-auto max-w-7xl px-4 py-8 md:py-12">
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/services/:categoryId" element={<CategoryPage />} />
+          <Route path="/estimator" element={<PriceEstimatorPage />} />
           <Route path="/auth" element={user ? <Navigate to="/role-selection" /> : <AuthPage />} />
           <Route 
             path="/role-selection" 

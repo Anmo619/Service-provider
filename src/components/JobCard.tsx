@@ -40,7 +40,9 @@ export default function JobCard({ job, profile, onAccept, onComplete, onCancel }
             <span className="w-1.5 h-1.5 rounded-full bg-current mr-2 animate-pulse" />
             {job.status}
           </div>
-          <h3 className="font-display font-black text-slate-900 text-xl tracking-tight leading-none">{job.category}</h3>
+          <h3 className="font-display font-black text-slate-900 text-xl tracking-tight leading-none">
+            {job.serviceName && job.serviceName !== 'General' ? job.serviceName : job.category}
+          </h3>
         </div>
         <div className="text-right">
           <p className="text-2xl font-black text-slate-900 tracking-tighter">₹{job.offeredPrice}</p>
@@ -54,7 +56,7 @@ export default function JobCard({ job, profile, onAccept, onComplete, onCancel }
       <div className="flex flex-wrap gap-4 pt-2">
         <div className="flex items-center space-x-1.5 bg-slate-100/80 px-3 py-1.5 rounded-lg text-[11px] font-bold text-slate-500">
           <MapPin className="w-3 h-3 text-brand-600" />
-          <span>{job.location}</span>
+          <span>{job.location} {job.detailedAddress?.houseNo ? `(${job.detailedAddress.houseNo})` : ''}</span>
         </div>
         <div className="flex items-center space-x-1.5 bg-slate-100/80 px-3 py-1.5 rounded-lg text-[11px] font-bold text-slate-500">
           <Clock className="w-3 h-3 text-brand-600" />
